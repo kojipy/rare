@@ -1,0 +1,16 @@
+components:
+  stn:
+    img_h: 96
+    img_w: 2304 # 96 * 24
+    num_fiducial: 20
+
+  bilstm:
+    hidden_size: 256
+
+rare:
+  input_channel: 3
+  output_channel: 512
+  num_class: 190
+  label_max_length: 20
+
+device: cuda
