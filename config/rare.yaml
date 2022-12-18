@@ -7,6 +7,13 @@ components:
   bilstm:
     hidden_size: 256
 
+  beamsearch:
+    emission_thresh: 0.01
+    beam_size: 10
+
+  lmfusion:
+    weight: 0.01
+
 rare:
   input_channel: 3
   output_channel: 512
