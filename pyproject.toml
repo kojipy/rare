@@ -7,10 +7,8 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "3.9.13"
-torch = "^1.13.1"
-torchvision = "^0.14.1"
 omegaconf = "^2.3.0"
-pytorch-lightning = "^1.8.5.post0"
+scipy = "^1.9.3"
 
 
 [tool.poetry.group.dev.dependencies]
