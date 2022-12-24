@@ -20,7 +20,7 @@ class Attention(nn.Module):
         one_hot = one_hot.scatter_(1, input_char, 1)
         return one_hot
 
-    def forward(self, batch_H, text, is_train=True, batch_max_length=25):
+    def forward(self, batch_H, text=None, batch_max_length=25):
         """
         input:
             batch_H : contextual_feature H = hidden state of encoder. [batch_size x num_steps x contextual_feature_channels]
@@ -40,7 +40,7 @@ class Attention(nn.Module):
             torch.FloatTensor(batch_size, self.hidden_size).fill_(0).to(device),
         )
 
-        if is_train:
+        if self.training:
             for i in range(num_steps):
                 # one-hot vectors for a i-th char. in a batch
                 char_onehots = self._char_to_onehot(

@@ -54,7 +54,7 @@ class Rare(nn.Module):
             self._cfg.rare.num_class,
         )
 
-    def forward(self, img, text, is_train=True):
+    def forward(self, img, text=None):
 
         rectified = self._spn(img)
 
@@ -69,14 +69,13 @@ class Rare(nn.Module):
         prediction = self._prediction(
             contextual_feature.contiguous(),
             text,
-            is_train,
             batch_max_length=self._cfg.rare.label_max_length,
         )
 
         return prediction
 
-    def predict_with_lm(self, img, text, lm: LitLstmLM):
-        pred = self.forward(img, text, is_train=False)
+    def predict_with_lm(self, img, lm: LitLstmLM, text=None):
+        pred = self.forward(img, text)
         pred = pred.squeeze()
 
         beams = [([], 0)]  # (prefix, accumulated_log_prob)
