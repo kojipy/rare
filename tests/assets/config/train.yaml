@@ -7,6 +7,6 @@ dataset:
     image: "dataset/images"
     label: "dataset/annotations"
 
-epoch: 3
+epoch: 1
 device: cuda
-batch_size: 5
+batch_size: 1

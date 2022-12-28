@@ -18,6 +18,6 @@ rare:
   input_channel: 3
   output_channel: 512
   num_class: 190
-  label_max_length: 30
+  label_max_length: 20
 
 device: cuda
