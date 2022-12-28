@@ -41,12 +41,12 @@ class SyntheticCuneiformLineImage(Dataset):
     def __init__(
         self,
         *,
-        cfg: DictConfig,
         target_signs_file_path: str,
         images_root_dir: str,
         texts_root_dir: str,
         first_idx: int,
         last_idx: int,
+        label_max_length: int,
         img_height: int = 96,
         img_width: int = 64 * 24,
         transform=None,
@@ -65,7 +65,7 @@ class SyntheticCuneiformLineImage(Dataset):
         self.unk_index = -1
         self.space_index = -2
         self.transform = transform
-        self._converter = LabelConverter(cfg.rare.label_max_length)
+        self._converter = LabelConverter(label_max_length)
 
         self._load_target_signs(target_signs_file_path)
 
