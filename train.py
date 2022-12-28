@@ -51,11 +51,5 @@ if __name__ == "__main__":
         transform=transform,
     )
 
-    trainer = Trainer(
-        cfg,
-        train_dataset,
-        valid_dataset,
-        rare,
-        transform,
-    )
+    trainer = Trainer(cfg, train_dataset, valid_dataset, rare)
     trainer.run()
