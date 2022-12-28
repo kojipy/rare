@@ -22,9 +22,9 @@ class Rare(nn.Module):
         self._cfg = cfg
 
         self._spn = TPS_SpatialTransformerNetwork(
-            F=self._cfg.components.stn.num_fiducial,
-            I_size=(self._cfg.components.stn.img_h, self._cfg.components.stn.img_w),
-            I_r_size=(self._cfg.components.stn.img_h, self._cfg.components.stn.img_w),
+            F=self._cfg.modules.stn.num_fiducial,
+            I_size=(self._cfg.modules.stn.img_h, self._cfg.modules.stn.img_w),
+            I_r_size=(self._cfg.modules.stn.img_h, self._cfg.modules.stn.img_w),
             I_channel_num=self._cfg.rare.input_channel,
         )
 
@@ -38,19 +38,19 @@ class Rare(nn.Module):
         self._srn = nn.Sequential(
             BidirectionalLSTM(
                 self._cfg.rare.output_channel,
-                self._cfg.components.bilstm.hidden_size,
-                self._cfg.components.bilstm.hidden_size,
+                self._cfg.modules.bilstm.hidden_size,
+                self._cfg.modules.bilstm.hidden_size,
             ),
             BidirectionalLSTM(
-                self._cfg.components.bilstm.hidden_size,
-                self._cfg.components.bilstm.hidden_size,
-                self._cfg.components.bilstm.hidden_size,
+                self._cfg.modules.bilstm.hidden_size,
+                self._cfg.modules.bilstm.hidden_size,
+                self._cfg.modules.bilstm.hidden_size,
             ),
         )
 
         self._prediction = Attention(
-            self._cfg.components.bilstm.hidden_size,
-            self._cfg.components.bilstm.hidden_size,
+            self._cfg.modules.bilstm.hidden_size,
+            self._cfg.modules.bilstm.hidden_size,
             self._cfg.rare.num_class,
         )
 
@@ -84,7 +84,7 @@ class Rare(nn.Module):
             for prefix, accumulated_log_prob in beams:
                 for c in range(self._cfg.rare.num_class):
                     log_prob = pred[t, c]
-                    if log_prob < self._cfg.components.beamsearch.emission_thresh:
+                    if log_prob < self._cfg.modules.beamsearch.emission_thresh:
                         continue
                     new_prefix = prefix + [c]
                     # log(p1 * p2) = log_p1 + log_p2
@@ -93,7 +93,7 @@ class Rare(nn.Module):
 
             # sorted by accumulated_log_prob
             new_beams.sort(key=lambda x: x[1], reverse=True)
-            beams = new_beams[: self._cfg.components.beamsearch.beam_size]
+            beams = new_beams[: self._cfg.modules.beamsearch.beam_size]
 
         # sum up beams to produce labels
         total_accu_log_prob = {}
@@ -123,7 +123,7 @@ class Rare(nn.Module):
             )
             print(labels, accu_log_prob, lanuage_model_prob)
             accu_log_prob += (
-                self._cfg.components.lmfusion.weight * lanuage_model_prob.item()
+                self._cfg.modules.lmfusion.weight * lanuage_model_prob.item()
             )
             labels_beams.append((list(labels), accu_log_prob))
         labels_beams.sort(key=lambda x: x[1], reverse=True)

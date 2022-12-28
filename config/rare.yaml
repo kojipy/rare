@@ -1,4 +1,4 @@
-components:
+modules:
   stn:
     img_h: 96
     img_w: 2304 # 96 * 24
