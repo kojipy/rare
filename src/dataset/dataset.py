@@ -10,7 +10,6 @@ from PIL import Image, ImageOps
 import torch
 from torch.utils.data import Dataset
 import numpy as np
-from omegaconf import DictConfig
 
 from ..model.converter import LabelConverter
 
