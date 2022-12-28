@@ -74,8 +74,8 @@ class Rare(nn.Module):
 
         return prediction
 
-    def predict_with_lm(self, img, lm: LitLstmLM, text=None):
-        pred = self.forward(img, text)
+    def predict_with_lm(self, img, lm: LitLstmLM):
+        pred = self.forward(img)
         pred = pred.squeeze()
 
         beams = [([], 0)]  # (prefix, accumulated_log_prob)
