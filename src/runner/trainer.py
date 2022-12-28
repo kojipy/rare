@@ -18,7 +18,6 @@ class Trainer:
         train_dataset: SyntheticCuneiformLineImage,
         valid_dataset: SyntheticCuneiformLineImage,
         model: torch.nn,
-        transform: T.Compose,
     ) -> None:
         self._cfg = cfg
         self._train_dataset = train_dataset
