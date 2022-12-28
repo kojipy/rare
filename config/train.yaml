@@ -11,6 +11,9 @@ dataset:
     first_index: 701
     last_index: 850
 
+dump:
+  weight: output/weight
+
 epoch: 3
 device: cuda
 batch_size: 5

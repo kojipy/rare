@@ -1,3 +1,6 @@
+import os
+from pathlib import Path
+
 import torch
 from torch.utils.data import DataLoader
 import torch.optim as optim
@@ -36,6 +39,11 @@ class Trainer:
         self._valid_loader = DataLoader(
             self._valid_dataset, batch_size=self._cfg.batch_size
         )
+        self._best_loss = 999999999999
+
+        os.makedirs(self._cfg.dump.weight, exist_ok=True)
+        self._last_weight = Path(self._cfg.dump.weight) / "last.pth"
+        self._best_weight = Path(self._cfg.dump.weight) / "best.pth"
 
     def _epoch(self, curr_epoch: int):
         # training
@@ -89,6 +97,11 @@ class Trainer:
                 epoch_valid_loss += loss
 
         mlflow.log_metric("valid loss", epoch_valid_loss, curr_epoch)
+
+        torch.save(self._model.state_dict(), str(self._last_weight))
+        if epoch_valid_loss < self._best_loss:
+            torch.save(self._model.state_dict(), str(self._best_weight))
+            self._best_loss = epoch_valid_loss
 
     def run(self):
         for i in range(self._cfg.epoch):
