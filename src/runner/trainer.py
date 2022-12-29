@@ -5,7 +5,6 @@ import torch
 from torch.utils.data import DataLoader
 import torch.optim as optim
 from torch.cuda.amp import GradScaler
-import torchvision.transforms as T
 from omegaconf import DictConfig
 import torch.nn.functional as F
 import mlflow
