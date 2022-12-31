@@ -62,8 +62,6 @@ class SyntheticCuneiformLineImage(Dataset):
         self.img_width = img_width
         self.reading_to_signs = {}
         self.sign_to_index = {}
-        self.unk_index = -1
-        self.space_index = -2
         self.transform = transform
         self._converter = LabelConverter(label_max_length)
 
