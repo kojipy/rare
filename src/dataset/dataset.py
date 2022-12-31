@@ -5,6 +5,7 @@
 import random
 import json
 from pathlib import Path
+from typing import List
 
 from PIL import Image, ImageOps
 import torch
@@ -139,7 +140,16 @@ class SyntheticCuneiformLineImage(Dataset):
 
         return image, target, target_length
 
-    def _load_text(self, path: Path):
+    def _load_text(self, path: Path) -> List[int]:
+        """
+        Read annotation json file
+
+        Args:
+            path (str): Annotaiton file path.
+
+        Returns:
+            The list of character index.
+        """
         with open(path) as f:
             loaded = json.load(f)
 
