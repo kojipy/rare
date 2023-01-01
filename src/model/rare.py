@@ -54,6 +54,8 @@ class Rare(nn.Module):
             self._cfg.rare.num_class,
         )
 
+        self._softmax = nn.Softmax(dim=2)
+
     def forward(self, img, text=None):
 
         rectified = self._spn(img)
@@ -71,8 +73,9 @@ class Rare(nn.Module):
             text,
             batch_max_length=self._cfg.rare.label_max_length,
         )
+        output = self._softmax(prediction)
 
-        return prediction
+        return output
 
     def predict(self, img: torch.Tensor):
         output = self(img)
