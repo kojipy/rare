@@ -49,7 +49,7 @@ class Trainer:
         self._model.train()
         epoch_train_loss = 0
 
-        for images, targets, target_lengths in tqdm(
+        for images, targets in tqdm(
             self._train_loader,
             desc="EPOCH {} : train loop".format(curr_epoch),
             leave=False,
@@ -58,7 +58,6 @@ class Trainer:
 
             images = images.to(self._cfg.device)
             targets = targets.to(self._cfg.device)
-            target_lengths = target_lengths.to(self._cfg.device)
 
             self._optimizer.zero_grad()
 
@@ -77,7 +76,7 @@ class Trainer:
         # evaluation
         self._model.eval()
         epoch_valid_loss = 0
-        for images, targets, target_lengths in tqdm(
+        for images, targets in tqdm(
             self._valid_loader,
             desc="EPOCH {} : valid loop".format(curr_epoch),
             dynamic_ncols=True,
@@ -86,7 +85,6 @@ class Trainer:
             with torch.no_grad():
                 images = images.to(self._cfg.device)
                 targets = targets.to(self._cfg.device)
-                target_lengths = target_lengths.to(self._cfg.device)
 
                 with torch.cuda.amp.autocast():
                     output = self._model(images, targets)

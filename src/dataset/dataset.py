@@ -5,7 +5,6 @@
 import random
 import json
 from pathlib import Path
-from typing import List
 
 from PIL import Image, ImageOps
 import torch
@@ -133,10 +132,6 @@ class SyntheticCuneiformLineImage(Dataset):
             loaded = json.load(f)
 
         target = self._converter.encode(loaded)
-
-        target_length = [len(target)]
         target = torch.LongTensor(target)
 
-        target_length = torch.LongTensor(target_length)
-
-        return image, target, target_length
+        return image, target
