@@ -10,10 +10,10 @@ transform = T.Compose(
     [
         #           T.ToTensor(),
         #           T.Pad(padding=(0, 16)),
-        T.RandomApply(
-            transforms=[T.GaussianBlur(kernel_size=(5, 9), sigma=(0.1, 5))], p=0.3
-        ),
-        T.RandomRotation(degrees=(0, 3)),
+        # T.RandomApply(
+        #     transforms=[T.GaussianBlur(kernel_size=(5, 9), sigma=(0.1, 5))], p=0.3
+        # ),
+        # T.RandomRotation(degrees=(0, 3)),
         #            T.RandomApply(
         #                transforms=[T.AugMix()],
         #                p=0.3
