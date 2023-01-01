@@ -97,7 +97,7 @@ class Trainer:
                 targets = targets.to(self._cfg.device)
 
                 with torch.cuda.amp.autocast():
-                    output = self._model(images, targets)
+                    output = self._model(images)
 
                     # (batch, max_label+1, num_classes) -> (batch * max_label+1, num_classes)
                     # this operation is needed to calculate CrossEntropyLoss.
