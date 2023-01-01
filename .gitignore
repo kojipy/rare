@@ -6,4 +6,5 @@ __pycache__
 
 mlruns/
 dataset/
+!src/dataset
 output/
