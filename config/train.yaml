@@ -14,6 +14,7 @@ dataset:
 dump:
   weight: output/weight
 
-epoch: 3
+epoch: 30
 device: cuda
 batch_size: 5
+weight: "output/weight/last.pth"

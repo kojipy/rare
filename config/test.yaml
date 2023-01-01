@@ -1,0 +1,10 @@
+dataset:
+  signs: "dataset/target_hittite_cuneiform_signs.json"
+  test:
+    image: "dataset/images"
+    label: "dataset/annotations"
+    first_index: 000
+    last_index: 999
+
+weight: "output/weight/best.pth"
+device: cuda
