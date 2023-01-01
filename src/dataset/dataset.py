@@ -132,6 +132,6 @@ class SyntheticCuneiformLineImage(Dataset):
             loaded = json.load(f)
 
         target = self._converter.encode(loaded)
-        target = torch.LongTensor(target)
+        target = torch.tensor(target)
 
         return image, target

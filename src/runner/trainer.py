@@ -9,6 +9,7 @@ from omegaconf import DictConfig
 import torch.nn.functional as F
 import mlflow
 from tqdm import tqdm
+from loguru import logger
 
 from ..dataset.dataset import SyntheticCuneiformLineImage
 
@@ -27,8 +28,9 @@ class Trainer:
         self._model = model
         if cfg.weight is not None:
             self._model.load_state_dict(torch.load(cfg.weight, map_location=cfg.device))
+            logger.info("Model file : {} : is loaded".format(cfg.weight))
 
-        self._criterion = torch.nn.CrossEntropyLoss()
+        self._criterion = torch.nn.CrossEntropyLoss(ignore_index=0)
         self._optimizer = optim.Adam(
             self._model.parameters(), lr=0.0015, weight_decay=0.000001
         )
@@ -66,9 +68,14 @@ class Trainer:
 
             with torch.cuda.amp.autocast():
                 output = self._model(images, targets)
-                targets = F.one_hot(targets, 190)
+                # targets = F.one_hot(targets, 190)
 
-            loss = self._criterion(output, targets.type(torch.float))
+            # (batch, max_label+1, num_classes) -> (batch * max_label+1, num_classes)
+            # this operation is needed to calculate CrossEntropyLoss.
+            output = output.view(-1, output.shape[-1])
+            targets = targets.view(-1)
+
+            loss = self._criterion(output, targets)
             epoch_train_loss += loss
 
             loss.backward()
@@ -91,8 +98,13 @@ class Trainer:
 
                 with torch.cuda.amp.autocast():
                     output = self._model(images, targets)
-                    targets = F.one_hot(targets, 190)
-                    loss = self._criterion(output, targets.type(torch.float))
+
+                    # (batch, max_label+1, num_classes) -> (batch * max_label+1, num_classes)
+                    # this operation is needed to calculate CrossEntropyLoss.
+                    output = output.view(-1, output.shape[-1])
+                    targets = targets.view(-1)
+
+                    loss = self._criterion(output, targets)
 
                 epoch_valid_loss += loss
 
