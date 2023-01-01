@@ -12,11 +12,17 @@ peotry install
 
 **You can change configuration by updating files in `config` folder.**
 
-```sh
+```command
 poetry run python train.py
 ```
 
 ---
+
+## Evaluate
+
+```command
+
+```
 
 ## Test
 
