@@ -54,6 +54,7 @@ class SyntheticCuneiformLineImage(Dataset):
         assert first_idx >= 0
         assert last_idx >= 0
         assert first_idx <= last_idx
+
         self.first_idx = first_idx
         self.last_idx = last_idx
         self.images_root_dir = images_root_dir
@@ -75,10 +76,9 @@ class SyntheticCuneiformLineImage(Dataset):
             sign_indices = []  # list of int sign indices
             for sign in signs.split("."):
                 if sign not in self.sign_to_index:
-                    self.sign_to_index[sign] = (
-                        len(self.sign_to_index) + 1
-                    )  # 0 is for blank
-                sign_indices.append(self.sign_to_index[sign])
+                    idx: int = len(self.sign_to_index) + 1  # 0 is for blank
+                    self.sign_to_index[sign] = idx
+                sign_indices.append(idx)
 
             for reading in loaded[signs]["readings"]:
                 self.reading_to_signs[reading["reading"]] = sign_indices
