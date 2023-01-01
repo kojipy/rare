@@ -74,6 +74,10 @@ class Rare(nn.Module):
 
         return prediction
 
+    def predict(self, img: torch.Tensor):
+        output = self(img)
+        return output.argmax(dim=2)
+
     def predict_with_lm(self, img, lm: LitLstmLM):
         pred = self.forward(img)
         pred = pred.squeeze()
