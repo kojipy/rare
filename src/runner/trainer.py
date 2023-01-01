@@ -25,6 +25,9 @@ class Trainer:
         self._train_dataset = train_dataset
         self._valid_dataset = valid_dataset
         self._model = model
+        if cfg.weight is not None:
+            self._model.load_state_dict(torch.load(cfg.weight, map_location=cfg.device))
+
         self._criterion = torch.nn.CrossEntropyLoss()
         self._optimizer = optim.Adam(
             self._model.parameters(), lr=0.0015, weight_decay=0.000001
