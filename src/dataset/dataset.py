@@ -128,8 +128,11 @@ class SyntheticCuneiformLineImage(Dataset):
         text_path = (
             Path(self.texts_root_dir) / f"{index//(10**3):04d}" / f"{index:09d}.json"
         )
-        target = self._load_text(text_path)
-        target = self._converter.encode(target)
+
+        with open(text_path) as f:
+            loaded = json.load(f)
+
+        target = self._converter.encode(loaded)
 
         target_length = [len(target)]
         target = torch.LongTensor(target)
@@ -137,32 +140,6 @@ class SyntheticCuneiformLineImage(Dataset):
         target_length = torch.LongTensor(target_length)
 
         return image, target, target_length
-
-    def _load_text(self, path: Path) -> List[int]:
-        """
-        Read annotation json file
-
-        Args:
-            path (str): Annotaiton file path.
-
-        Returns:
-            The list of character index.
-        """
-        with open(path) as f:
-            loaded = json.load(f)
-
-        target = []
-        for line in loaded["line"]:
-            for words in line["signs"]:
-                for reading_dict in words:
-                    reading = reading_dict["reading"]
-                    if reading in self.reading_to_signs:
-                        target.extend(self.reading_to_signs[reading])
-                    else:
-                        target.append(self.unk_index)
-                target.append(self.space_index)
-
-        return target[:-1]  # remove last space
 
 
 def synth_cuneiform_collate_fn(batch):
