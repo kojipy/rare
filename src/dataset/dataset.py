@@ -60,30 +60,8 @@ class SyntheticCuneiformLineImage(Dataset):
         self.texts_root_dir = texts_root_dir
         self.img_height = img_height
         self.img_width = img_width
-        self.reading_to_signs = {}
-        self.sign_to_index = {}
         self.transform = transform
         self._converter = LabelConverter(label_max_length, target_signs_file_path)
-
-        self._load_target_signs(target_signs_file_path)
-
-    def _load_target_signs(self, target_signs_file_path: str):
-        with open(target_signs_file_path) as f:
-            loaded = json.load(f)
-
-        for signs in sorted(loaded):
-            sign_indices = []  # list of int sign indices
-            for sign in signs.split("."):
-                if sign not in self.sign_to_index:
-                    idx: int = len(self.sign_to_index) + 1  # 0 is for blank
-                    self.sign_to_index[sign] = idx
-                sign_indices.append(idx)
-
-            for reading in loaded[signs]["readings"]:
-                self.reading_to_signs[reading["reading"]] = sign_indices
-
-        self.space_index = len(self.sign_to_index)
-        self.unk_index = len(self.sign_to_index) + 1
 
     def _get_image_path(self, index):
         image_path = (
