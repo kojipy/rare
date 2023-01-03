@@ -6,7 +6,6 @@ from torch.utils.data import DataLoader
 import torch.optim as optim
 from torch.cuda.amp import GradScaler
 from omegaconf import DictConfig
-import torch.nn.functional as F
 import mlflow
 from tqdm import tqdm
 from loguru import logger
