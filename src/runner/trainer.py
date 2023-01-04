@@ -11,6 +11,7 @@ from tqdm import tqdm
 from loguru import logger
 
 from ..dataset.dataset import SyntheticCuneiformLineImage
+from .loss import CustomCrossEntropy
 
 
 class Trainer:
@@ -30,6 +31,8 @@ class Trainer:
             logger.info("Model file : {} : is loaded".format(cfg.weight))
 
         self._criterion = torch.nn.CrossEntropyLoss(ignore_index=0)
+        # self._criterion = CustomCrossEntropy()
+
         self._optimizer = optim.Adam(
             self._model.parameters(), lr=0.0015, weight_decay=0.000001
         )
@@ -80,7 +83,9 @@ class Trainer:
             loss.backward()
             self._optimizer.step()
 
-        mlflow.log_metric("train loss", epoch_train_loss, curr_epoch)
+        mlflow.log_metric(
+            "train loss", epoch_train_loss / len(self._train_dataset), curr_epoch
+        )
 
         # evaluation
         self._model.eval()
@@ -107,7 +112,9 @@ class Trainer:
 
                 epoch_valid_loss += loss
 
-        mlflow.log_metric("valid loss", epoch_valid_loss, curr_epoch)
+        mlflow.log_metric(
+            "valid loss", epoch_valid_loss / len(self._valid_dataset), curr_epoch
+        )
 
         torch.save(self._model.state_dict(), str(self._last_weight))
         if epoch_valid_loss < self._best_loss:
