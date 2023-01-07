@@ -80,8 +80,9 @@ class Trainer:
             loss = self._criterion(output, targets)
             epoch_train_loss += loss
 
-            loss.backward()
-            self._optimizer.step()
+            self._scaler.scale(loss).backward()
+            self._scaler.step(self._optimizer)
+            self._scaler.update()
 
         mlflow.log_metric(
             "train loss", epoch_train_loss / len(self._train_dataset), curr_epoch
