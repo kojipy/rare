@@ -46,7 +46,7 @@ class Trainer:
             self._valid_dataset, batch_size=self._cfg.batch_size
         )
         self._best_loss = 999999999999
-        self._train_iter = 0
+        self._train_iter = 1
 
         os.makedirs(self._cfg.dump.weight, exist_ok=True)
         self._last_weight = Path(self._cfg.dump.weight) / "last.pth"
