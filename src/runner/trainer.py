@@ -46,15 +46,90 @@ class Trainer:
             self._valid_dataset, batch_size=self._cfg.batch_size
         )
         self._best_loss = 999999999999
+        self._train_iter = 0
 
         os.makedirs(self._cfg.dump.weight, exist_ok=True)
         self._last_weight = Path(self._cfg.dump.weight) / "last.pth"
         self._best_weight = Path(self._cfg.dump.weight) / "best.pth"
 
+    def _iter(
+        self, is_train: bool, images: torch.Tensor, targets: torch.Tensor
+    ) -> float:
+        """
+        This method recievs input X, and ground truth Y. after that run model inference.
+        If this function is called as train mode, call backward.
+
+        Args:
+            is_train (bool): True if train mode, else False.
+            images (torch.Tensor): model input X.
+            targets (torch.Tensor): ground truth Y.
+
+        Returns:
+            loss (float): loss between model output and targets.
+        """
+
+        def _calc_loss(output, targets) -> float:
+            output = output.view(-1, output.shape[-1])
+            targets = targets.view(-1)
+            return self._criterion(output, targets)
+
+        images = images.to(self._cfg.device)
+        targets = targets.to(self._cfg.device)
+
+        if is_train:  # ~~~ Training mode ~~~
+            self._model.train()
+            self._optimizer.zero_grad()
+            with torch.cuda.amp.autocast():
+                output = self._model(images, targets)
+
+            loss = _calc_loss(output, targets)
+
+            self._scaler.scale(loss).backward()
+            self._scaler.step(self._optimizer)
+            self._scaler.update()
+
+        else:  # ~~~ Validation mode ~~~
+            self._model.eval()
+            with torch.no_grad():
+                with torch.cuda.amp.autocast():
+                    output = self._model(images)
+
+                loss = _calc_loss(output, targets)
+
+        return float(loss.detach().cpu())
+
+    def _eval(self, iter_: int):
+        epoch_valid_loss = 0
+        for images, targets in tqdm(
+            self._valid_loader, desc="Validation loop", dynamic_ncols=True, leave=False
+        ):
+            loss = self._iter(is_train=False, images=images, targets=targets)
+            epoch_valid_loss += loss
+
+        mlflow.log_metric(
+            "valid loss", epoch_valid_loss / len(self._valid_dataset), iter_
+        )
+
+        self._save(epoch_valid_loss)
+
+    def _save(self, eval_loss: float):
+        """
+        Save model weight file. `last.pth` file is alawys saved. `best.pth` file is
+        saved only if model is best accuracy.
+        """
+        torch.save(self._model.state_dict(), str(self._last_weight))
+        if eval_loss < self._best_loss:
+            torch.save(self._model.state_dict(), str(self._best_weight))
+            self._best_loss = eval_loss
+
     def _epoch(self, curr_epoch: int):
-        # training
-        self._model.train()
-        epoch_train_loss = 0
+        """
+        This function runs one epoch.
+        Args:
+            curr_epoch (int): current epoch (starts from 1, not 0)
+        """
+
+        train_loss = 0
 
         for images, targets in tqdm(
             self._train_loader,
@@ -62,65 +137,19 @@ class Trainer:
             leave=False,
             dynamic_ncols=True,
         ):
+            loss = self._iter(is_train=True, images=images, targets=targets)
+            train_loss += loss
 
-            images = images.to(self._cfg.device)
-            targets = targets.to(self._cfg.device)
+            if self._train_iter % self._cfg.log_interval == 0:
+                mlflow.log_metric(
+                    "train loss",
+                    train_loss / (self._cfg.log_interval * self._cfg.batch_size),
+                    self._train_iter,
+                )
+                self._eval(self._train_iter)
+                train_loss = 0
 
-            self._optimizer.zero_grad()
-
-            with torch.cuda.amp.autocast():
-                output = self._model(images, targets)
-                # targets = F.one_hot(targets, 190)
-
-            # (batch, max_label+1, num_classes) -> (batch * max_label+1, num_classes)
-            # this operation is needed to calculate CrossEntropyLoss.
-            output = output.view(-1, output.shape[-1])
-            targets = targets.view(-1)
-
-            loss = self._criterion(output, targets)
-            epoch_train_loss += loss
-
-            self._scaler.scale(loss).backward()
-            self._scaler.step(self._optimizer)
-            self._scaler.update()
-
-        mlflow.log_metric(
-            "train loss", epoch_train_loss / len(self._train_dataset), curr_epoch
-        )
-
-        # evaluation
-        self._model.eval()
-        epoch_valid_loss = 0
-        for images, targets in tqdm(
-            self._valid_loader,
-            desc="EPOCH {} : valid loop".format(curr_epoch),
-            dynamic_ncols=True,
-            leave=False,
-        ):
-            with torch.no_grad():
-                images = images.to(self._cfg.device)
-                targets = targets.to(self._cfg.device)
-
-                with torch.cuda.amp.autocast():
-                    output = self._model(images)
-
-                    # (batch, max_label+1, num_classes) -> (batch * max_label+1, num_classes)
-                    # this operation is needed to calculate CrossEntropyLoss.
-                    output = output.view(-1, output.shape[-1])
-                    targets = targets.view(-1)
-
-                    loss = self._criterion(output, targets)
-
-                epoch_valid_loss += loss
-
-        mlflow.log_metric(
-            "valid loss", epoch_valid_loss / len(self._valid_dataset), curr_epoch
-        )
-
-        torch.save(self._model.state_dict(), str(self._last_weight))
-        if epoch_valid_loss < self._best_loss:
-            torch.save(self._model.state_dict(), str(self._best_weight))
-            self._best_loss = epoch_valid_loss
+            self._train_iter += 1
 
     def run(self):
         for i in range(self._cfg.epoch):
