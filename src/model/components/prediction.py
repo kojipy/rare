@@ -50,7 +50,9 @@ class Attention(nn.Module):
                 char_onehots = self._char_to_onehot(
                     text[:, i], onehot_dim=self.num_classes
                 )
-                # hidden : decoder's hidden s_{t-1}, batch_H : encoder's hidden H, char_onehots : one-hot(y_{t-1})
+                # hidden : decoder's hidden s_{t-1}
+                # batch_H : encoder's hidden H
+                # char_onehots : one-hot(y_{t-1})
 
                 hidden, _ = self.attention_cell(hidden, batch_H, char_onehots)
                 # LSTM hidden index (0: hidden, 1: Cell)
@@ -89,7 +91,7 @@ class AttentionCell(nn.Module):
         self.hidden_size = hidden_size
 
     def forward(self, prev_hidden, batch_H, char_onehots):
-        # [batch_size x num_encoder_step x num_channel] -> [batch_size x num_encoder_step x hidden_size]
+        # [batch x encoder_step x num_channel] -> [batch x encoder_step x hidden]
         batch_H_proj = self.i2h(batch_H)
         prev_hidden_proj = self.h2h(prev_hidden[0]).unsqueeze(1)
 
