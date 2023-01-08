@@ -40,7 +40,7 @@ class Trainer:
 
         # setup dataset and dataloader
         self._train_loader = DataLoader(
-            self._train_dataset, batch_size=self._cfg.batch_size
+            self._train_dataset, batch_size=self._cfg.batch_size, shuffle=True
         )
         self._valid_loader = DataLoader(
             self._valid_dataset, batch_size=self._cfg.batch_size
