@@ -12,6 +12,8 @@ class LabelConverter:
         self._reading_to_signs = {}
         self._sign_to_index = {}
         self._index_to_sign = {}
+        self._space_index = None
+        self._unk_index = None
         self._load_target_signs(target_signs_json)
 
     @property
