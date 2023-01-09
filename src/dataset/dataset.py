@@ -77,7 +77,6 @@ class SyntheticCuneiformLineImage(Dataset):
         image_path = self._get_image_path(index)
 
         image = Image.open(str(image_path)).convert("RGB")
-        # image = image.resize((self.img_width, self.img_height), resample=Image.BILINEAR)
         width = int(image.width * (self.img_height / image.height))
         width = my_resize(width, 128, 1536)
 
