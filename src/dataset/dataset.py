@@ -94,7 +94,12 @@ class SyntheticCuneiformLineImage(Dataset):
 
         stacked = vstack([img_above, image, img_below])
         image = stacked.crop(
-            (0, stacked.height // 2 - 48, stacked.width, stacked.height // 2 + 48)
+            (
+                0,
+                stacked.height // 2 - int(image.height / 2 * 1.75),
+                stacked.width,
+                stacked.height // 2 + int(image.height / 2 * 1.75),
+            )
         )
 
         if self.transform:
