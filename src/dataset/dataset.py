@@ -2,14 +2,14 @@
 # -images/
 #   - 0000 - 000000000.png
 #           - 000000001.png
-import random
 import json
+import random
 from pathlib import Path
 
-from PIL import Image, ImageOps
-import torch
-from torch.utils.data import Dataset
 import numpy as np
+import torch
+from PIL import Image, ImageOps
+from torch.utils.data import Dataset
 
 from ..model.converter import LabelConverter
 
