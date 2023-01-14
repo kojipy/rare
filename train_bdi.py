@@ -33,7 +33,9 @@ transform = T.Compose(
 def parse_args():
     parser = argparse.ArgumentParser("Training RARE model with Born Digital Images")
     parser.add_argument(
-        "dataset_root", type=str, default="dataset/Challenge1_Training_Task3_Images_GT"
+        "--dataset_root",
+        type=str,
+        default="dataset/Challenge1_Training_Task3_Images_GT",
     )
     return parser.parse_args()
 
