@@ -81,7 +81,7 @@ class Attention(nn.Module):
 
 
 class AttentionCell(nn.Module):
-    def __init__(self, input_size, hidden_size, num_embeddings):
+    def __init__(self, input_size: int, hidden_size: int, num_embeddings: int):
         super(AttentionCell, self).__init__()
         self.i2h = nn.Linear(input_size, hidden_size, bias=False)
         # either i2i or h2h should have bias
