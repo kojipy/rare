@@ -13,7 +13,7 @@ dataset:
 
 dump:
   weight: output/weight
-  mlflow: "./mlruns-tmp"
+  mlflow: "./mlruns"
 
 epoch: 30
 device: cuda
