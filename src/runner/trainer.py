@@ -1,14 +1,14 @@
 import os
 from pathlib import Path
 
-import torch
-from torch.utils.data import DataLoader
-import torch.optim as optim
-from torch.cuda.amp import GradScaler
-from omegaconf import DictConfig
 import mlflow
-from tqdm import tqdm
+import torch
+import torch.optim as optim
 from loguru import logger
+from omegaconf import DictConfig
+from torch.cuda.amp import GradScaler
+from torch.utils.data import DataLoader
+from tqdm import tqdm
 
 from ..dataset.dataset import SyntheticCuneiformLineImage
 from .loss import CustomCrossEntropy
@@ -51,6 +51,8 @@ class Trainer:
         os.makedirs(self._cfg.dump.weight, exist_ok=True)
         self._last_weight = Path(self._cfg.dump.weight) / "last.pth"
         self._best_weight = Path(self._cfg.dump.weight) / "best.pth"
+
+        mlflow.set_tracking_uri(self._cfg.dump.mlflow)
 
     def _iter(
         self, is_train: bool, images: torch.Tensor, targets: torch.Tensor
