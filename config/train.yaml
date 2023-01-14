@@ -13,9 +13,10 @@ dataset:
 
 dump:
   weight: output/weight
+  mlflow: "./mlruns-tmp"
 
 epoch: 30
 device: cuda
 batch_size: 5
 log_interval: 300
-weight: "output/weight/last.pth"
+weight:
