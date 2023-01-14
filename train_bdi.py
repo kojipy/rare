@@ -2,6 +2,8 @@
 Training RARE with Born-Digital-Images dataset.
 dataset URL : https://rrc.cvc.uab.es/?ch=1 
 """
+import argparse
+
 import torchvision.transforms as T
 from omegaconf import OmegaConf
 
@@ -27,9 +29,20 @@ transform = T.Compose(
     ]
 )
 
+
+def parse_args():
+    parser = argparse.ArgumentParser("Training RARE model with Born Digital Images")
+    parser.add_argument(
+        "dataset_root", type=str, default="dataset/Challenge1_Training_Task3_Images_GT"
+    )
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
+    args = parse_args()
+
     train_dataset = BdiDataset(
-        root_dir="dataset/born-digital-images",
+        root_dir=args.dataset_root,
         first_index=1,
         last_index=3000,
         label_max_length=30,
@@ -39,7 +52,7 @@ if __name__ == "__main__":
     )
 
     valid_dataset = BdiDataset(
-        root_dir="dataset/born-digital-images",
+        root_dir=args.dataset_root,
         first_index=3001,
         last_index=3500,
         label_max_length=30,
