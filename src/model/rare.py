@@ -1,15 +1,13 @@
 import torch
 import torch.nn as nn
 from omegaconf import DictConfig
-
 from scipy.special import logsumexp
 
-from .components.transformation import TPS_SpatialTransformerNetwork
 from .components.feat_extraction import ResNet_FeatureExtractor
-from .components.sequence_modeling import BidirectionalLSTM
 from .components.prediction import Attention
+from .components.sequence_modeling import BidirectionalLSTM
+from .components.transformation import TPS_SpatialTransformerNetwork
 from .lang_model import LitLstmLM
-
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
