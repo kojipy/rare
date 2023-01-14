@@ -22,6 +22,8 @@ class Trainer:
         valid_dataset: SyntheticCuneiformLineImage,
         model: torch.nn,
     ) -> None:
+        logger.info(cfg)
+
         self._cfg = cfg
         self._train_dataset = train_dataset
         self._valid_dataset = valid_dataset
