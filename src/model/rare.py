@@ -66,12 +66,11 @@ class Rare(nn.Module):
 
         contextual_feature = self._srn(visual_feature)
 
-        prediction = self._prediction(
+        output = self._prediction(
             contextual_feature.contiguous(),
             text,
             batch_max_length=self._cfg.rare.label_max_length,
         )
-        output = self._softmax(prediction)
 
         return output
 
