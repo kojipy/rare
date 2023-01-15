@@ -11,7 +11,6 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from ..dataset.dataset import SyntheticCuneiformLineImage
-from .loss import CustomCrossEntropy
 
 
 class Trainer:
@@ -33,7 +32,6 @@ class Trainer:
             logger.info("Model file : {} : is loaded".format(cfg.weight))
 
         self._criterion = torch.nn.CrossEntropyLoss(ignore_index=0)
-        # self._criterion = CustomCrossEntropy()
 
         self._optimizer = optim.Adam(
             self._model.parameters(), lr=0.0015, weight_decay=0.000001
