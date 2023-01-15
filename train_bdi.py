@@ -66,7 +66,7 @@ if __name__ == "__main__":
     model_cfg = OmegaConf.load("config/rare.yaml")
     train_cfg = OmegaConf.load("config/train.yaml")
     cfg = OmegaConf.merge(model_cfg, train_cfg)
-    cfg.rare.num_classes = train_dataset.num_classes
+    cfg.rare.num_class = train_dataset.num_classes
 
     rare = Rare(cfg).to(cfg.device)
 
