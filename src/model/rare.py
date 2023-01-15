@@ -52,8 +52,6 @@ class Rare(nn.Module):
             self._cfg.rare.num_class,
         )
 
-        self._softmax = nn.Softmax(dim=2)
-
     def forward(self, img, text=None):
 
         rectified = self._spn(img)
