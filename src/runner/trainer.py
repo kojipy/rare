@@ -54,9 +54,7 @@ class Trainer:
 
         mlflow.set_tracking_uri(self._cfg.dump.mlflow)
 
-    def _iter(
-        self, is_train: bool, images: torch.Tensor, targets: torch.Tensor
-    ) -> float:
+    def _iter(self, is_train: bool, images: torch.Tensor, targets: torch.Tensor):
         """
         This method recievs input X, and ground truth Y. after that run model inference.
         If this function is called as train mode, call backward.
@@ -70,7 +68,7 @@ class Trainer:
             loss (float): loss between model output and targets.
         """
 
-        def _calc_loss(output, targets) -> float:
+        def _calc_loss(output, targets):
             output = output.view(-1, output.shape[-1])
             targets = targets.view(-1)
             return self._criterion(output, targets)
@@ -98,14 +96,16 @@ class Trainer:
 
                 loss = _calc_loss(output, targets)
 
-        return float(loss.detach().cpu())
+        return float(loss.detach().cpu()), output, targets
 
     def _eval(self, iter_: int):
         epoch_valid_loss = 0
         for images, targets in tqdm(
             self._valid_loader, desc="Validation loop", dynamic_ncols=True, leave=False
         ):
-            loss = self._iter(is_train=False, images=images, targets=targets)
+            loss, batch_output, batch_targets = self._iter(
+                is_train=False, images=images, targets=targets
+            )
             epoch_valid_loss += loss
 
         mlflow.log_metric(
@@ -114,6 +114,12 @@ class Trainer:
         logger.info(
             "Valid loss : {}".format(epoch_valid_loss / len(self._valid_dataset))
         )
+        batch_predict = batch_output.argmax(dim=2)
+        for predict, target in zip(batch_predict, batch_targets):
+            pred_decoded = self._train_dataset.decode(predict)
+            target_decoded = self._train_dataset.decode(target)
+            logger.info("Predict[Train] : {}".format(pred_decoded))
+            logger.info("Target[Train] : {}".format(target_decoded))
 
         self._save(epoch_valid_loss)
 
@@ -134,7 +140,7 @@ class Trainer:
             curr_epoch (int): current epoch (starts from 1, not 0)
         """
 
-        train_loss = 0
+        train_loss = 0.0
 
         for images, targets in tqdm(
             self._train_loader,
@@ -142,7 +148,9 @@ class Trainer:
             leave=False,
             dynamic_ncols=True,
         ):
-            loss = self._iter(is_train=True, images=images, targets=targets)
+            loss, batch_output, batch_targets = self._iter(
+                is_train=True, images=images, targets=targets
+            )
             train_loss += loss
 
             if self._train_iter % self._cfg.log_interval == 0:
@@ -156,6 +164,13 @@ class Trainer:
                         train_loss / (self._cfg.log_interval * self._cfg.batch_size)
                     )
                 )
+                batch_predict = batch_output.argmax(dim=2)
+                for predict, target in zip(batch_predict, batch_targets):
+                    pred_decoded = self._train_dataset.decode(predict.tolist())
+                    target_decoded = self._train_dataset.decode(target.tolist())
+                    logger.info("Predict[Train] : {}".format(pred_decoded))
+                    logger.info("Target[Train] : {}".format(target_decoded))
+
                 self._eval(self._train_iter)
                 train_loss = 0
 
