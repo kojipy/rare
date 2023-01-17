@@ -59,7 +59,7 @@ class BdiDataset(Dataset):
         for line in lines:
             imgname, label = line.split(".png, ")
             imgname += ".png"
-            self._labels[str(self._root_dir / imgname)] = label
+            self._labels[str(self._root_dir / imgname)] = label[1:-1]  # remove `"`
             for char in label:
                 chars_uniq.add(char)
 
