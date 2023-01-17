@@ -44,7 +44,7 @@ class Trainer:
             self._train_dataset, batch_size=self._cfg.batch_size, shuffle=True
         )
         self._valid_loader = DataLoader(
-            self._valid_dataset, batch_size=self._cfg.batch_size
+            self._valid_dataset, batch_size=self._cfg.batch_size, shuffle=True
         )
         self._best_loss = 999999999999
         self._train_iter = 1
