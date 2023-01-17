@@ -113,6 +113,12 @@ class SyntheticCuneiformLineImage(Dataset):
         with open(text_path) as f:
             loaded = json.load(f)
 
-        target = self._converter.encode(loaded)
+        target = self.encode(loaded)
 
         return image, target
+
+    def decode(self, text):
+        return self._converter.decode(text)
+
+    def encode(self, text):
+        return self._converter.encode(text)

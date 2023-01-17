@@ -31,13 +31,14 @@ class BdiDataset(Dataset):
         self._gt_file = self._root_dir / "gt.txt"
         self._first_index = first_index  # 1 start index
         self._last_index = last_index  # 1 start index
-        self._char2idx: Dict[str, int] = {}
         self._labels: Dict = {}
         self._label_max_length = label_max_length
         self.img_height = img_height
         self.img_width = img_width
         self._transform = transform
 
+        self._char2idx: Dict[str, int] = {}
+        self._idx2char: Dict[str, int] = {}
         self.__load_gt()
 
     @property
@@ -67,6 +68,11 @@ class BdiDataset(Dataset):
         for char in classes:
             self._char2idx[char] = classes.index(char) + 1  # 0 index is for padding
 
+        # create inverted dict of self._char2idx
+        for char_key in self._char2idx:
+            idx = self._char2idx[char_key]
+            self._idx2char[idx] = char_key
+
     def __len__(self) -> int:
         return self._last_index - self._first_index + 1
 
@@ -95,12 +101,12 @@ class BdiDataset(Dataset):
             image = self._transform(image)
 
         label = self._labels[img_path]
-        target = self.__encode(label)
+        target = self.encode(label)
         target = torch.tensor(target, dtype=torch.long)
 
         return image, target
 
-    def __encode(self, label: str) -> List[int]:
+    def encode(self, label: str) -> List[int]:
         """
         Translate text label to list of class index.
         """
@@ -109,3 +115,11 @@ class BdiDataset(Dataset):
             cls_idx = self._char2idx[char]
             encoded[i] = cls_idx
         return encoded
+
+    def decode(self, text: List[int]):
+        decoded_chars = []
+        for idx in text:
+            if 0 == idx:  # 0 is index for space
+                continue
+            decoded_chars.append(self._idx2char[idx])
+        return decoded_chars
