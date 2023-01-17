@@ -43,11 +43,15 @@ def parse_args():
 if __name__ == "__main__":
     args = parse_args()
 
+    model_cfg = OmegaConf.load("config/rare.yaml")
+    train_cfg = OmegaConf.load("config/train.yaml")
+    cfg = OmegaConf.merge(model_cfg, train_cfg)
+
     train_dataset = BdiDataset(
         root_dir=args.dataset_root,
         first_index=1,
         last_index=3000,
-        label_max_length=30,
+        label_max_length=cfg.rare.label_max_length,
         img_height=96,
         img_width=1536,
         transform=transform,
@@ -57,15 +61,12 @@ if __name__ == "__main__":
         root_dir=args.dataset_root,
         first_index=3001,
         last_index=3500,
-        label_max_length=30,
+        label_max_length=cfg.rare.label_max_length,
         img_height=96,
         img_width=1536,
         transform=transform,
     )
 
-    model_cfg = OmegaConf.load("config/rare.yaml")
-    train_cfg = OmegaConf.load("config/train.yaml")
-    cfg = OmegaConf.merge(model_cfg, train_cfg)
     cfg.rare.num_class = train_dataset.num_classes
 
     rare = Rare(cfg).to(cfg.device)
