@@ -39,6 +39,7 @@ class BdiDataset(Dataset):
 
         self._char2idx: Dict[str, int] = {}
         self._idx2char: Dict[str, int] = {}
+        self._pad_index = -1
         self.__load_gt()
 
     @property
@@ -66,7 +67,8 @@ class BdiDataset(Dataset):
         classes = list(chars_uniq)
         classes.sort()
         for char in classes:
-            self._char2idx[char] = classes.index(char) + 1  # 0 index is for padding
+            self._char2idx[char] = classes.index(char) + 1  # 0 index is for GO Token
+        self._pad_index = len(classes) + 2
 
         # create inverted dict of self._char2idx
         for char_key in self._char2idx:
@@ -110,7 +112,7 @@ class BdiDataset(Dataset):
         """
         Translate text label to list of class index.
         """
-        encoded = [0] * (self._label_max_length + 1)
+        encoded = [self._pad_index] * (self._label_max_length + 1)
         for i, char in enumerate(label):
             cls_idx = self._char2idx[char]
             encoded[i] = cls_idx
@@ -119,7 +121,7 @@ class BdiDataset(Dataset):
     def decode(self, text: List[int]):
         decoded_chars = []
         for idx in text:
-            if 0 == idx:  # 0 is index for space
+            if 0 == idx or self._pad_index == idx:  # 0 is index for space
                 continue
             decoded_chars.append(self._idx2char[idx])
         return decoded_chars
