@@ -111,6 +111,9 @@ class Trainer:
         mlflow.log_metric(
             "valid loss", epoch_valid_loss / len(self._valid_dataset), iter_
         )
+        logger.info(
+            "Valid loss : {}".format(epoch_valid_loss / len(self._valid_dataset))
+        )
 
         self._save(epoch_valid_loss)
 
@@ -147,6 +150,11 @@ class Trainer:
                     "train loss",
                     train_loss / (self._cfg.log_interval * self._cfg.batch_size),
                     self._train_iter,
+                )
+                logger.info(
+                    "Train loss : {}".format(
+                        train_loss / (self._cfg.log_interval * self._cfg.batch_size)
+                    )
                 )
                 self._eval(self._train_iter)
                 train_loss = 0
