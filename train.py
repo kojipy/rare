@@ -1,25 +1,21 @@
-from omegaconf import OmegaConf
 import torchvision.transforms as T
+from omegaconf import OmegaConf
 
-from src.model.rare import Rare
 from src.dataset.dataset import SyntheticCuneiformLineImage
+from src.model.rare import Rare
 from src.runner.trainer import Trainer
-
 
 transform = T.Compose(
     [
-        #           T.ToTensor(),
-        #           T.Pad(padding=(0, 16)),
-        # T.RandomApply(
-        #     transforms=[T.GaussianBlur(kernel_size=(5, 9), sigma=(0.1, 5))], p=0.3
-        # ),
-        # T.RandomRotation(degrees=(0, 3)),
-        #            T.RandomApply(
-        #                transforms=[T.AugMix()],
-        #                p=0.3
-        #            ),
+        # T.ToTensor(),
+        T.Pad(padding=(0, 16)),
+        T.RandomApply(
+            transforms=[T.GaussianBlur(kernel_size=(5, 9), sigma=(0.1, 5))], p=0.3
+        ),
+        T.RandomRotation(degrees=(0, 3)),
+        T.RandomApply(transforms=[T.AugMix()], p=0.3),
         T.Resize(96),
-        #            T.Grayscale(),
+        # T.Grayscale(),
         T.ToTensor(),
     ]
 )
