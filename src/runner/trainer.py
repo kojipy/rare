@@ -116,8 +116,8 @@ class Trainer:
         )
         batch_predict = batch_output.argmax(dim=2)
         for predict, target in zip(batch_predict, batch_targets):
-            pred_decoded = self._train_dataset.decode(predict)
-            target_decoded = self._train_dataset.decode(target)
+            pred_decoded = self._train_dataset.decode(predict.tolist())
+            target_decoded = self._train_dataset.decode(target.tolist())
             logger.info("Predict[Train] : {}".format(pred_decoded))
             logger.info("Target[Train] : {}".format(target_decoded))
 
