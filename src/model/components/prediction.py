@@ -32,7 +32,7 @@ class Attention(nn.Module):
             [batch_size x num_steps x num_classes]
         """
         batch_size = batch_H.size(0)
-        num_steps = batch_max_length + 1  # +1 for [s] at end of sentence.
+        num_steps = batch_max_length  # +1 for [s] at end of sentence.
 
         output_hiddens = (
             torch.FloatTensor(batch_size, num_steps, self.hidden_size)

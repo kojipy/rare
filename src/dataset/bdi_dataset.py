@@ -37,9 +37,10 @@ class BdiDataset(Dataset):
         self.img_width = img_width
         self._transform = transform
 
-        self._char2idx: Dict[str, int] = {}
+        self._GO_TOKEN = "[GO]"
+        self._STOP_TOKEN = "[STOP]"
+        self._char2idx: Dict[str, int] = {self._GO_TOKEN: 0, self._STOP_TOKEN: 1}
         self._idx2char: Dict[str, int] = {}
-        self._pad_index = -1
         self.__load_gt()
 
     @property
@@ -67,8 +68,8 @@ class BdiDataset(Dataset):
         classes = list(chars_uniq)
         classes.sort()
         for char in classes:
-            self._char2idx[char] = classes.index(char) + 1  # 0 index is for GO Token
-        self._pad_index = len(classes) + 2
+            # index 0 is for GO Token, 1 is for STOP Token
+            self._char2idx[char] = classes.index(char) + 2
 
         # create inverted dict of self._char2idx
         for char_key in self._char2idx:
@@ -110,18 +111,22 @@ class BdiDataset(Dataset):
 
     def encode(self, label: str) -> List[int]:
         """
-        Translate text label to list of class index.
+        Translate text label to list of class index. padding with GO Token.
         """
-        encoded = [self._pad_index] * (self._label_max_length + 1)
+        label = list(label)
+        label.append(self._STOP_TOKEN)
+        encoded = [0] * (self._label_max_length + 1)
         for i, char in enumerate(label):
             cls_idx = self._char2idx[char]
-            encoded[i] = cls_idx
+            encoded[i + 1] = cls_idx
+
         return encoded
 
     def decode(self, text: List[int]):
         decoded_chars = []
         for idx in text:
-            if 0 == idx or self._pad_index == idx:  # 0 is index for space
-                continue
             decoded_chars.append(self._idx2char[idx])
+        decoded_chars = "".join(decoded_chars)
+        stop_index = decoded_chars.find(self._STOP_TOKEN)
+        decoded_chars = decoded_chars[:stop_index]
         return decoded_chars

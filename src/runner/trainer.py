@@ -71,7 +71,7 @@ class Trainer:
 
         def _calc_loss(output, targets):
             output = output.view(-1, output.shape[-1])
-            targets = targets.view(-1)
+            targets = targets[:, 1:].reshape(-1)  # without GO Token
             return self._criterion(output, targets)
 
         images = images.to(self._cfg.device)
@@ -81,7 +81,7 @@ class Trainer:
             self._model.train()
             self._optimizer.zero_grad()
             with torch.cuda.amp.autocast():
-                output = self._model(images, targets)
+                output = self._model(images, targets[:, :-1])
 
             loss = _calc_loss(output, targets)
 
