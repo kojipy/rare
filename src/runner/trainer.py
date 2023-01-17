@@ -31,6 +31,7 @@ class Trainer:
             self._model.load_state_dict(torch.load(cfg.weight, map_location=cfg.device))
             logger.info("Model file : {} : is loaded".format(cfg.weight))
 
+        # ignore 0 (Go Token)
         self._criterion = torch.nn.CrossEntropyLoss(ignore_index=0)
 
         self._optimizer = optim.Adam(

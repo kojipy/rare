@@ -1,5 +1,5 @@
 import json
-from typing import List, Dict
+from typing import Dict, List
 
 import torch
 
@@ -14,6 +14,7 @@ class LabelConverter:
         self._index_to_sign = {}
         self._space_index = None
         self._unk_index = None
+        self._pad_index = None
         self._load_target_signs(target_signs_json)
 
     @property
@@ -71,8 +72,8 @@ class LabelConverter:
 
         text = target[:-1]  # remove last space
         text = torch.tensor(text)
-        text_with_pad = torch.zeros(self._label_max_len + 1, dtype=torch.long)
-        text_with_pad[: len(text)] = text
+        text_with_pad = torch.ones(self._pad_index, dtype=torch.long)
+        text_with_pad[1 : len(text) + 1] = text  # first index is for GO TOKEN
         return text_with_pad
 
     def _load_target_signs(self, target_signs_file_path: str):
@@ -104,6 +105,7 @@ class LabelConverter:
 
         self._space_index = len(self._sign_to_index)
         self._unk_index = len(self._sign_to_index) + 1
+        self._pad_index = len(self._sign_to_index) + 2
 
     def _load_text(self, path) -> List[int]:
         """
