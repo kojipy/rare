@@ -10,11 +10,13 @@ class LabelConverter:
     def __init__(self, label_max_length: int, target_signs_json: str):
         self._label_max_len = label_max_length
         self._reading_to_signs = {}
-        self._sign_to_index = {}
-        self._index_to_sign = {}
+        self._GO_TOKEN = "[GO]"
+        self._STOP_TOKEN = "[STOP]"
+        self._sign_to_index = {self._GO_TOKEN: 0, self._STOP_TOKEN: 1}
+        self._index_to_sign = {0: self._GO_TOKEN, 1: self._STOP_TOKEN}
         self._space_index = None
         self._unk_index = None
-        self._pad_index = None
+
         self._load_target_signs(target_signs_json)
 
     @property
@@ -25,7 +27,7 @@ class LabelConverter:
     def sign2index(self):
         return self._sign_to_index
 
-    def decode(self, text: List[int]) -> str:
+    def decode(self, text: List[int]) -> List[str]:
         """
         Decode list of indicies to text.
 
@@ -33,17 +35,17 @@ class LabelConverter:
             text (str): list of indiceis to be decoded
 
         Returns:
-            str: decoded string
+            List[str]: decoded string
         """
         decoded_chars = []
         for label in text:
+            if self._sign_to_index[self._STOP_TOKEN] == label:
+                break
             if self._unk_index == label:
                 decoded_chars.append("UNK")
                 continue
             if self._space_index == label:
                 decoded_chars.append(" ")
-                continue
-            if 0 == label:  # 0 is index for space
                 continue
             decoded_chars.append(self._index_to_sign[label])
 
@@ -59,7 +61,7 @@ class LabelConverter:
         Returns:
             List[int]: list of indecies for each character.
         """
-        target = []
+        target = [self._sign_to_index[self._GO_TOKEN]]  # 1st index is for GO TOKEN
         for line in text["line"]:
             for words in line["signs"]:
                 for reading_dict in words:
@@ -70,10 +72,11 @@ class LabelConverter:
                         target.append(self._unk_index)
                 target.append(self._space_index)
 
-        text = target[:-1]  # remove last space
-        text = torch.tensor(text)
-        text_with_pad = torch.ones(self._pad_index, dtype=torch.long)
-        text_with_pad[1 : len(text) + 1] = text  # first index is for GO TOKEN
+        target = target[:-1]  # remove last space
+        target.append(self._sign_to_index[self._STOP_TOKEN])  # end with STOP TOKEN
+        text = torch.tensor(target)
+        text_with_pad = torch.zeros(self._label_max_len + 1, dtype=torch.long)
+        text_with_pad[: len(text)] = text
         return text_with_pad
 
     def _load_target_signs(self, target_signs_file_path: str):
@@ -94,7 +97,8 @@ class LabelConverter:
             sign_indices = []  # list of int sign indices
             for sign in signs.split("."):
                 if sign not in self._sign_to_index:
-                    idx: int = len(self._sign_to_index) + 1  # 0 is for blank
+                    # 0 is for GO TOKEN, 2 is for STOP TOKEN
+                    idx: int = len(self._sign_to_index) + 2
                     self._sign_to_index[sign] = idx
                     self._index_to_sign[idx] = sign
 
@@ -105,7 +109,6 @@ class LabelConverter:
 
         self._space_index = len(self._sign_to_index)
         self._unk_index = len(self._sign_to_index) + 1
-        self._pad_index = len(self._sign_to_index) + 2
 
     def _load_text(self, path) -> List[int]:
         """
