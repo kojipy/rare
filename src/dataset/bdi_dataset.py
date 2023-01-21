@@ -118,12 +118,12 @@ class BdiDataset(Dataset):
         """
         Translate text label to list of class index. padding with GO Token.
         """
-        label = list(label)
+        label = [self._GO_TOKEN] + list(label)
         label.append(self._STOP_TOKEN)
         encoded = [0] * (self._label_max_length + 1)
         for i, char in enumerate(label):
             cls_idx = self._char2idx[char]
-            encoded[i + 1] = cls_idx
+            encoded[i] = cls_idx
 
         return encoded
 
