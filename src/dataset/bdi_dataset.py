@@ -37,9 +37,14 @@ class BdiDataset(Dataset):
         self.img_width = img_width
         self._transform = transform
 
+        self._PAD_TOKEN = "[PAD]"
         self._GO_TOKEN = "[GO]"
         self._STOP_TOKEN = "[STOP]"
-        self._char2idx: Dict[str, int] = {self._GO_TOKEN: 0, self._STOP_TOKEN: 1}
+        self._char2idx: Dict[str, int] = {
+            self._PAD_TOKEN: 0,
+            self._GO_TOKEN: 1,
+            self._STOP_TOKEN: 2,
+        }
         self._idx2char: Dict[str, int] = {}
         self.__load_gt()
 
@@ -68,8 +73,8 @@ class BdiDataset(Dataset):
         classes = list(chars_uniq)
         classes.sort()
         for char in classes:
-            # index 0 is for GO Token, 1 is for STOP Token
-            self._char2idx[char] = classes.index(char) + 2
+            # index 0 is for PAD TOKE, 1 is for GO Token, 2 is for STOP Token
+            self._char2idx[char] = classes.index(char) + 3
 
         # create inverted dict of self._char2idx
         for char_key in self._char2idx:

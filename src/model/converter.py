@@ -10,10 +10,19 @@ class LabelConverter:
     def __init__(self, label_max_length: int, target_signs_json: str):
         self._label_max_len = label_max_length
         self._reading_to_signs = {}
+        self._PAD_TOKEN = "[PAD]"
         self._GO_TOKEN = "[GO]"
         self._STOP_TOKEN = "[STOP]"
-        self._sign_to_index = {self._GO_TOKEN: 0, self._STOP_TOKEN: 1}
-        self._index_to_sign = {0: self._GO_TOKEN, 1: self._STOP_TOKEN}
+        self._sign_to_index = {
+            self._PAD_TOKEN: 0,
+            self._GO_TOKEN: 1,
+            self._STOP_TOKEN: 2,
+        }
+        self._index_to_sign = {
+            0: self._PAD_TOKEN,
+            1: self._GO_TOKEN,
+            2: self._STOP_TOKEN,
+        }
         self._space_index = None
         self._unk_index = None
 
@@ -46,6 +55,8 @@ class LabelConverter:
                 continue
             if self._space_index == label:
                 decoded_chars.append(" ")
+                continue
+            if self._PAD_TOKEN == label:
                 continue
             decoded_chars.append(self._index_to_sign[label])
 
@@ -97,8 +108,8 @@ class LabelConverter:
             sign_indices = []  # list of int sign indices
             for sign in signs.split("."):
                 if sign not in self._sign_to_index:
-                    # 0 is for GO TOKEN, 2 is for STOP TOKEN
-                    idx: int = len(self._sign_to_index) + 2
+                    # 0 is for PAD TOKEN 1 is for GO TOKEN, 2 is for STOP TOKEN
+                    idx: int = len(self._sign_to_index) + 3
                     self._sign_to_index[sign] = idx
                     self._index_to_sign[idx] = sign
 
