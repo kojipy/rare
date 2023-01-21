@@ -60,7 +60,7 @@ class Attention(nn.Module):
             probs = self.generator(output_hiddens)
 
         else:
-            targets = torch.LongTensor(batch_size).fill_(0).to(device)  # [GO] token
+            targets = torch.LongTensor(batch_size).fill_(1).to(device)  # [GO] token
             probs = (
                 torch.FloatTensor(batch_size, num_steps, self.num_classes)
                 .fill_(0)
