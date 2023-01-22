@@ -53,9 +53,9 @@ class LabelConverter:
             if self._unk_index == label:
                 decoded_chars.append("UNK")
                 continue
-            if self._space_index == label:
-                # decoded_chars.append(" ")
-                continue
+            # if self._space_index == label:
+            # decoded_chars.append(" ")
+            # continue
             if self._PAD_TOKEN == label:
                 continue
             decoded_chars.append(self._index_to_sign[label])
