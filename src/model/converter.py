@@ -23,7 +23,7 @@ class LabelConverter:
             1: self._GO_TOKEN,
             2: self._STOP_TOKEN,
         }
-        self._space_index = None
+        # self._space_index = None
         self._unk_index = None
 
         self._load_target_signs(target_signs_json)
@@ -54,7 +54,7 @@ class LabelConverter:
                 decoded_chars.append("UNK")
                 continue
             if self._space_index == label:
-                decoded_chars.append(" ")
+                # decoded_chars.append(" ")
                 continue
             if self._PAD_TOKEN == label:
                 continue
@@ -81,9 +81,9 @@ class LabelConverter:
                         target.extend(self._reading_to_signs[reading])
                     else:
                         target.append(self._unk_index)
-                target.append(self._space_index)
+                # target.append(self._space_index)
 
-        target = target[:-1]  # remove last space
+        # target = target[:-1]  # remove last space
         target.append(self._sign_to_index[self._STOP_TOKEN])  # end with STOP TOKEN
         text = torch.tensor(target)
         text_with_pad = torch.zeros(self._label_max_len + 1, dtype=torch.long)
@@ -118,8 +118,8 @@ class LabelConverter:
             for reading in loaded[signs]["readings"]:
                 self._reading_to_signs[reading["reading"]] = sign_indices
 
-        self._space_index = len(self._sign_to_index)
-        self._unk_index = len(self._sign_to_index) + 1
+        # self._space_index = len(self._sign_to_index)
+        self._unk_index = len(self._sign_to_index)
 
     def _load_text(self, path) -> List[int]:
         """
@@ -143,6 +143,6 @@ class LabelConverter:
                         target.extend(self._reading_to_signs[reading])
                     else:
                         target.append(self._unk_index)
-                target.append(self._space_index)
+                # target.append(self._space_index)
 
-        return target[:-1]  # remove last space
+        return target
