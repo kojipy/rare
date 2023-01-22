@@ -17,7 +17,7 @@ modules:
 rare:
   input_channel: 3
   output_channel: 512
-  num_class: 194
+  num_class: 1942
   label_max_length: 45
 
 device: cuda
