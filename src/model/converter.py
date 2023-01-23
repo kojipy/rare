@@ -118,8 +118,8 @@ class LabelConverter:
             for reading in loaded[signs]["readings"]:
                 self._reading_to_signs[reading["reading"]] = sign_indices
 
-        self._space_index = len(self._sign_to_index)
-        self._unk_index = len(self._sign_to_index) + 1
+        self._space_index = len(self._sign_to_index) + 4
+        self._unk_index = len(self._sign_to_index) + 5
 
     def _load_text(self, path) -> List[int]:
         """
