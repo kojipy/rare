@@ -109,7 +109,7 @@ class LabelConverter:
             for sign in signs.split("."):
                 if sign not in self._sign_to_index:
                     # 0 is for PAD TOKEN 1 is for GO TOKEN, 2 is for STOP TOKEN
-                    idx: int = len(self._sign_to_index) + 3
+                    idx: int = len(self._sign_to_index)
                     self._sign_to_index[sign] = idx
                     self._index_to_sign[idx] = sign
 
@@ -118,8 +118,8 @@ class LabelConverter:
             for reading in loaded[signs]["readings"]:
                 self._reading_to_signs[reading["reading"]] = sign_indices
 
-        self._space_index = len(self._sign_to_index) + 4
-        self._unk_index = len(self._sign_to_index) + 5
+        self._space_index = len(self._sign_to_index) + 1
+        self._unk_index = len(self._sign_to_index) + 2
 
     def _load_text(self, path) -> List[int]:
         """
