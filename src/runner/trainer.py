@@ -120,8 +120,8 @@ class Trainer:
             pred_decoded = self._train_dataset.decode(predict.tolist())
             # without GO Token
             target_decoded = self._train_dataset.decode(target[1:].tolist())
-            logger.info("Predict[Valid] : {}".format(pred_decoded))
-            logger.info("Target[Valid] : {}".format(target_decoded))
+            logger.info("Predict[Valid]\t: {}".format(pred_decoded))
+            logger.info("Target[Valid]\t: {}".format(target_decoded))
 
         self._save(epoch_valid_loss)
 
@@ -171,8 +171,8 @@ class Trainer:
                     pred_decoded = self._train_dataset.decode(predict.tolist())
                     # without GO TOKEN
                     target_decoded = self._train_dataset.decode(target[1:].tolist())
-                    logger.info("Predict[Train] : {}".format(pred_decoded))
-                    logger.info("Target[Train] : {}".format(target_decoded))
+                    logger.info("Predict[Train]\t: {}".format(pred_decoded))
+                    logger.info("Target[Train]\t: {}".format(target_decoded))
 
                 self._eval(self._train_iter)
                 train_loss = 0
