@@ -19,12 +19,12 @@ class Rare(nn.Module):
         super(Rare, self).__init__()
         self._cfg = cfg
 
-        self._spn = TPS_SpatialTransformerNetwork(
-            F=self._cfg.modules.stn.num_fiducial,
-            I_size=(self._cfg.modules.stn.img_h, self._cfg.modules.stn.img_w),
-            I_r_size=(self._cfg.modules.stn.img_h, self._cfg.modules.stn.img_w),
-            I_channel_num=self._cfg.rare.input_channel,
-        )
+        # self._spn = TPS_SpatialTransformerNetwork(
+        #     F=self._cfg.modules.stn.num_fiducial,
+        #     I_size=(self._cfg.modules.stn.img_h, self._cfg.modules.stn.img_w),
+        #     I_r_size=(self._cfg.modules.stn.img_h, self._cfg.modules.stn.img_w),
+        #     I_channel_num=self._cfg.rare.input_channel,
+        # )
 
         self._feat_ext = ResNet_FeatureExtractor(
             self._cfg.rare.input_channel, self._cfg.rare.output_channel
@@ -54,7 +54,8 @@ class Rare(nn.Module):
 
     def forward(self, img, text=None):
 
-        rectified = self._spn(img)
+        # rectified = self._spn(img)
+        rectified = img
 
         visual_feature = self._feat_ext(rectified)
         visual_feature = self._pool(
