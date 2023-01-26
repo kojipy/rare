@@ -122,13 +122,12 @@ class SyntheticCuneiformValidationLineImage(Dataset):
         return len(self._text_raw_data)
 
     def _get_image_path(self, index):
-        image_path = Path(self.images_root_dir) / f"{index:09d}.png"
+        image_path = Path(self.images_root_dir) / f"valid_{index:03d}.png"
         return image_path
 
     def __getitem__(self, index):
         # Image
-        # image_path = Path(self.images_root_dir) / f"{index//(10**3):04d}" / f"{(index+1):03d}.png"
-        image_path = Path(self.images_root_dir) / f"{index:09d}.png"
+        image_path = self._get_image_path(index=index)
 
         image = Image.open(str(image_path)).convert("RGB")
         # image = image.resize((self.img_width, self.img_height), resample=Image.BILINEAR)
