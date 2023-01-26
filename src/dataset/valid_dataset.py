@@ -119,7 +119,7 @@ class SyntheticCuneiformValidationLineImage(Dataset):
 
     def __len__(self):
         # return len(self.target_labels)
-        return len(self.target_labels)
+        return len(self._text_raw_data)
 
     def _get_image_path(self, index):
         image_path = (
