@@ -136,6 +136,6 @@ class SyntheticCuneiformValidationLineImage(Dataset):
             image = self.transform(image)
 
         text = self._text_raw_data[index]
-        target = self._converter(text)
+        target = self._converter.encode(text)
 
         return image, target
