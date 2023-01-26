@@ -7,18 +7,16 @@ import torch.optim as optim
 from loguru import logger
 from omegaconf import DictConfig
 from torch.cuda.amp import GradScaler
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
-
-from ..dataset.dataset import SyntheticCuneiformLineImage
 
 
 class Trainer:
     def __init__(
         self,
         cfg: DictConfig,
-        train_dataset: SyntheticCuneiformLineImage,
-        valid_dataset: SyntheticCuneiformLineImage,
+        train_dataset: Dataset,
+        valid_dataset: Dataset,
         model: torch.nn,
     ) -> None:
         logger.info(cfg)
