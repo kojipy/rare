@@ -15,8 +15,8 @@ class SyntheticCuneiformValidationLineImage(Dataset):
         target_signs_file_path: str,
         images_root_dir: str,
         label_max_length: int,
-        img_height: int = 64,
-        img_width: int = 64 * 21,
+        img_height: int = 96,
+        img_width: int = 64 * 24,
         transform=None,
     ):
         self.images_root_dir = images_root_dir
