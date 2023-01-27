@@ -62,25 +62,28 @@ class LabelConverter:
 
         return decoded_chars
 
-    def encode(self, text: List[str]):
+    def encode(self, text: Dict) -> torch.Tensor:
         """
         Encode string to list of index of character
 
         Args:
-            text (List): List of text.
+            text (Dict): loaded data from annotation json file.
 
         Returns:
             List[int]: list of indecies for each character.
         """
         target = [self._sign_to_index[self._GO_TOKEN]]  # 1st index is for GO TOKEN
-        for reading in text:
-            if reading in self._reading_to_signs:
-                target.extend(self._reading_to_signs[reading])
-            elif reading == " ":
+        for line in text["line"]:
+            for words in line["signs"]:
+                for reading_dict in words:
+                    reading = reading_dict["reading"]
+                    if reading in self._reading_to_signs:
+                        target.extend(self._reading_to_signs[reading])
+                    else:
+                        target.append(self._unk_index)
                 target.append(self._space_index)
-            else:
-                target.append(self._unk_index)
 
+        target = target[:-1]  # remove last space
         target.append(self._sign_to_index[self._STOP_TOKEN])  # end with STOP TOKEN
         text = torch.tensor(target)
         text_with_pad = torch.zeros(self._label_max_len + 1, dtype=torch.long)

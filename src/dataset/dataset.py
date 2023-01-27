@@ -2,16 +2,16 @@
 # -images/
 #   - 0000 - 000000000.png
 #           - 000000001.png
+import json
 import random
 from pathlib import Path
-from typing import List
 
 import numpy as np
+import torch
 from PIL import Image, ImageOps
 from torch.utils.data import Dataset
 
 from ..model.converter import LabelConverter
-from .label_file import LabelFile
 
 
 def my_resize(v, minv, maxv):
@@ -61,8 +61,7 @@ class SyntheticCuneiformLineImage(Dataset):
         self.img_height = img_height
         self.img_width = img_width
         self.transform = transform
-        self._label_max_length = label_max_length
-        self._converter = LabelConverter(self._label_max_length, target_signs_file_path)
+        self._converter = LabelConverter(label_max_length, target_signs_file_path)
 
     def _get_image_path(self, index):
         image_path = (
@@ -111,13 +110,15 @@ class SyntheticCuneiformLineImage(Dataset):
             Path(self.texts_root_dir) / f"{index//(10**3):04d}" / f"{index:09d}.json"
         )
 
-        lf = LabelFile(str(text_path))
-        target = self.encode(lf.text)
+        with open(text_path) as f:
+            loaded = json.load(f)
+
+        target = self.encode(loaded)
 
         return image, target
 
-    def decode(self, text: List[int]):
+    def decode(self, text):
         return self._converter.decode(text)
 
-    def encode(self, text: List[str]):
+    def encode(self, text):
         return self._converter.encode(text)
