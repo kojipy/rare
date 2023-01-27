@@ -2,6 +2,7 @@ import torchvision.transforms as T
 from omegaconf import OmegaConf
 
 from src.dataset.dataset import SyntheticCuneiformLineImage
+from src.dataset.valid_dataset import SyntheticCuneiformValidationLineImage
 from src.model.rare import Rare
 from src.runner.trainer import Trainer
 
@@ -37,13 +38,20 @@ if __name__ == "__main__":
         transform=transform,
     )
 
-    valid_dataset = SyntheticCuneiformLineImage(
+    # valid_dataset = SyntheticCuneiformLineImage(
+    #     target_signs_file_path=cfg.dataset.signs,
+    #     images_root_dir=cfg.dataset.valid.image,
+    #     texts_root_dir=cfg.dataset.valid.label,
+    #     label_max_length=cfg.rare.label_max_length,
+    #     first_idx=cfg.dataset.valid.first_index,
+    #     last_idx=cfg.dataset.valid.last_index,
+    #     transform=transform,
+    # )
+
+    valid_dataset = SyntheticCuneiformValidationLineImage(
         target_signs_file_path=cfg.dataset.signs,
         images_root_dir=cfg.dataset.valid.image,
-        texts_root_dir=cfg.dataset.valid.label,
         label_max_length=cfg.rare.label_max_length,
-        first_idx=cfg.dataset.valid.first_index,
-        last_idx=cfg.dataset.valid.last_index,
         transform=transform,
     )
 
