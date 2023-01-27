@@ -76,7 +76,7 @@ class LabelConverter:
         for reading in text:
             if reading in self._reading_to_signs:
                 target.extend(self._reading_to_signs[reading])
-            if reading == " ":
+            elif reading == " ":
                 target.append(self._space_index)
             else:
                 target.append(self._unk_index)
