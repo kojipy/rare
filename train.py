@@ -1,3 +1,5 @@
+import numbers
+
 import torchvision.transforms as T
 from omegaconf import OmegaConf
 
@@ -18,6 +20,58 @@ transform = T.Compose(
         T.Resize(96),
         # T.Grayscale(),
         T.ToTensor(),
+    ]
+)
+
+
+def get_padding(image):
+    max_w = 1344
+    max_h = 64
+
+    imsize = image.size
+    h_padding = max_w - imsize[0]
+    l_pad = h_padding if h_padding % 1 == 0 else h_padding + 0.5
+    r_pad = h_padding if h_padding % 1 == 0 else h_padding - 0.5
+
+    padding = (0, 0, h_padding, 0)
+
+    return padding
+
+
+class NewPad:
+    def __init__(self, fill=0, padding_mode="constant"):
+        assert isinstance(fill, (numbers.Number, str, tuple))
+        assert padding_mode in ["constant", "edge", "reflect", "symmetric"]
+
+        self.fill = fill
+        self.padding_mode = padding_mode
+
+    def __call__(self, img):
+        """
+        Args:
+            img (PIL Image): Image to be padded.
+
+        Returns:
+            PIL Image: Padded image.
+        """
+        return T.functional.pad(img, get_padding(img), self.fill, self.padding_mode)
+
+    def __repr__(self):
+        return (
+            self.__class__.__name__
+            + "(padding={0}, fill={1}, padding_mode={2})".format(
+                self.fill, self.padding_mode
+            )
+        )
+
+
+validation_transform = T.Compose(
+    [
+        T.Resize(96),
+        NewPad(),
+        #    T.CenterCrop((64, 1536)),
+        T.ToTensor(),
+        # T.Grayscale(),
     ]
 )
 
@@ -52,7 +106,7 @@ if __name__ == "__main__":
         target_signs_file_path=cfg.dataset.signs,
         images_root_dir=cfg.dataset.valid.image,
         label_max_length=cfg.rare.label_max_length,
-        transform=transform,
+        transform=validation_transform,
     )
 
     trainer = Trainer(cfg, train_dataset, valid_dataset, rare)
