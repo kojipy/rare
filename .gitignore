@@ -5,6 +5,7 @@ __pycache__
 .pytest_cache
 .DS_Store
 .mypy_cache
+.ipynb_checkpoints
 
 mlruns/
 dataset/
