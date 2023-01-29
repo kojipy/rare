@@ -1,24 +1,24 @@
 dataset:
-  signs: "dataset/target_hittite_cuneiform_signs.json"
+  signs: "config/target_hittite_cuneiform_signs.json"
   train:
-    image: "dataset/images"
-    label: "dataset/annotations"
+    image: "/storage/images"
+    label: "/storage/annotations"
     first_index: 0
-    last_index: 700
+    last_index: 900999
+  # valid:
+  #   image: "dataset/images"
+  #   label: "dataset/annotations"
+  #   first_index: 901000
+  #   last_index: 909999
   valid:
-    image: "dataset/images"
-    label: "dataset/annotations"
-    first_index: 701
-    last_index: 850
+    image: "/storage/valid"
 
 dump:
   weight: output/weight
   mlflow: "./mlruns"
 
-epoch: 30
+epoch: 999
 device: cuda
-batch_size: 5
-log_interval: 300
-learning_rate: 0.0001
-weight_decay: 0.000001
-weight:
+batch_size: 32
+log_interval: 500
+weight: 
