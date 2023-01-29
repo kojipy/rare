@@ -21,4 +21,6 @@ epoch: 999
 device: cuda
 batch_size: 32
 log_interval: 500
+learning_rate: 0.001
+weight_decay: 0.000001
 weight: 
