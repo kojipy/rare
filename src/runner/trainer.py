@@ -35,7 +35,7 @@ class Trainer:
         self._criterion = torch.nn.CrossEntropyLoss(ignore_index=0)
 
         self._optimizer = optim.Adam(
-            self._model.parameters(), lr=0.003, weight_decay=0.000001
+            self._model.parameters(), lr=0.0001, weight_decay=0.000001
         )
         self._scaler = GradScaler()
 
