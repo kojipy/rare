@@ -81,7 +81,7 @@ class Trainer:
             self._model.train()
             self._optimizer.zero_grad()
             with torch.cuda.amp.autocast():
-                output = self._model(images, targets[:, :-1])
+                output, _ = self._model(images, targets[:, :-1])
 
             loss = _calc_loss(output, targets)
 
@@ -93,7 +93,7 @@ class Trainer:
             self._model.eval()
             with torch.no_grad():
                 with torch.cuda.amp.autocast():
-                    output = self._model(images)
+                    output, _ = self._model(images)
 
                 loss = _calc_loss(output, targets)
 

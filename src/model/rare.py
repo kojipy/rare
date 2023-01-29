@@ -1,3 +1,7 @@
+from typing import List
+
+import cv2
+import numpy as np
 import torch
 import torch.nn as nn
 from omegaconf import DictConfig
@@ -65,17 +69,18 @@ class Rare(nn.Module):
 
         contextual_feature = self._srn(visual_feature)
 
-        output = self._prediction(
+        output, alphas = self._prediction(
             contextual_feature.contiguous(),
             text,
             batch_max_length=self._cfg.rare.label_max_length,
         )
 
-        return output
+        return output, alphas
 
     def predict(self, img: torch.Tensor):
-        output = self(img)
-        return output.argmax(dim=2)
+        with torch.no_grad():
+            output, alphas = self(img)
+        return output.argmax(dim=2), alphas
 
     def predict_with_lm(self, img, lm: LitLstmLM):
         pred = self.forward(img)
@@ -133,3 +138,21 @@ class Rare(nn.Module):
         labels = labels_beams[0][0]
 
         return labels
+
+
+def show_atten_mask(img: np.ndarray, alpha: np.ndarray, transparency: float):
+    """
+    Return attention mask.
+
+    Args:
+        img (np.ndarray): image shape should be (height, width, channel)
+        alpha (np.ndarray): lsit of attention vlaue.
+
+    Returns: np.ndarray
+    """
+    h, w, _ = img.shape
+    mask = np.repeat([alpha * 255], h, axis=0).astype(np.uint8)
+    mask = cv2.resize(mask, (w, h))
+    heatmap = cv2.applyColorMap(mask, cv2.COLORMAP_JET)
+    overlay = cv2.addWeighted(img, 1 - transparency, heatmap, transparency, 1.0)
+    return overlay

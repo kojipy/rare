@@ -44,6 +44,7 @@ class Attention(nn.Module):
             torch.FloatTensor(batch_size, self.hidden_size).fill_(0).to(device),
         )
 
+        alphas = []
         if self.training:
             for i in range(num_steps):
                 # one-hot vectors for a i-th char. in a batch
@@ -72,12 +73,13 @@ class Attention(nn.Module):
                     targets, onehot_dim=self.num_classes
                 )
                 hidden, alpha = self.attention_cell(hidden, batch_H, char_onehots)
+                alphas.append(alpha.squeeze().numpy())
                 probs_step = self.generator(hidden[0])
                 probs[:, i, :] = probs_step
                 _, next_input = probs_step.max(1)
                 targets = next_input
 
-        return probs  # batch_size x num_steps x num_classes
+        return probs, alphas  # batch_size x num_steps x num_classes
 
 
 class AttentionCell(nn.Module):
